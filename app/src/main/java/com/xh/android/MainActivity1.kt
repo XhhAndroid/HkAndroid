@@ -4,11 +4,13 @@ import android.content.Intent
 import android.os.Bundle
 import com.h.android.HAndroid
 import com.h.android.activity.HActivity
+import com.h.android.http.HApiManager
 import com.h.android.utils.HLog
 import com.h.android.utils.HToast
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /**
  *2021/8/12
@@ -26,6 +28,13 @@ class MainActivity1 : HActivity() {
 //        finish()
 
         start()
+        textApi()
+    }
+
+    private fun textApi(){
+        GlobalScope.launch {
+            val textModel = HApiManager.get().getApiService(TestApiService::class.java).textApi()
+        }
     }
 
     private fun start() {
@@ -42,11 +51,8 @@ class MainActivity1 : HActivity() {
                     emit(-1)
                 }.map { n ->
                     HLog.d("kotlin--->$n")
-
                     return@map n
-                }.collect{r->
-                    HLog.d("kotlin--->result:$r")
-                }
+                }.collect()
         }
         job.start()
     }

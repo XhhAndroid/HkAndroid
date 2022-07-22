@@ -7,7 +7,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import okhttp3.Interceptor;
 import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
@@ -105,7 +104,6 @@ public class Hhttp {
         return new Retrofit.Builder()
                 .client(ohcb.build())
                 .baseUrl(baseUrl)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
                 .build().create(apiClazz);
     }
