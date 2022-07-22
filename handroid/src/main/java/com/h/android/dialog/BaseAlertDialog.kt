@@ -226,16 +226,16 @@ class BaseAlertDialog(protected var mContext: Context) : Dialog(mContext, R.styl
             getPhoneCodeLockTimer = Runnable {
                 countDownTime--
                 if (countDownTime <= 0) {
-                    timeHandler!!.removeCallbacks(getPhoneCodeLockTimer)
+                    getPhoneCodeLockTimer?.let { timeHandler!!.removeCallbacks(it) }
                     textView.text = text
                     textView.isEnabled = true
                     textView.setTextColor(ContextCompat.getColor(mContext, if (textColor == 0) R.color.C1 else textColor))
                     return@Runnable
                 }
                 textView.text = "$text($countDownTime)"
-                timeHandler!!.postDelayed(getPhoneCodeLockTimer, 1000)
+                getPhoneCodeLockTimer?.let { timeHandler!!.postDelayed(it, 1000) }
             }
-            timeHandler!!.post(getPhoneCodeLockTimer)
+            getPhoneCodeLockTimer?.let { timeHandler!!.post(it) }
         } else {
             textView.text = if (TextUtils.isEmpty(text)) "" else text
         }
@@ -251,7 +251,7 @@ class BaseAlertDialog(protected var mContext: Context) : Dialog(mContext, R.styl
     override fun dismiss() {
         super.dismiss()
         if (timeHandler != null && getPhoneCodeLockTimer != null) {
-            timeHandler.removeCallbacks(getPhoneCodeLockTimer)
+            getPhoneCodeLockTimer?.let { timeHandler.removeCallbacks(it) }
         }
     }
 

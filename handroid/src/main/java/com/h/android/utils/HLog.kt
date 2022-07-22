@@ -17,7 +17,7 @@ object HLog {
         e("$tag-$text")
     }
 
-    fun e(text: String?) {
+    fun e(text: String) {
         if (TextUtils.isEmpty(text)) {
             return
         }
@@ -27,7 +27,7 @@ object HLog {
         Log.e(TAG, text)
     }
 
-    fun w(text: String?) {
+    fun w(text: String) {
         if (TextUtils.isEmpty(text)) {
             return
         }
@@ -41,7 +41,7 @@ object HLog {
         d("$tag-$text")
     }
 
-    fun d(text: String?) {
+    fun d(text: String) {
         if (TextUtils.isEmpty(text)) {
             return
         }
@@ -51,7 +51,7 @@ object HLog {
         Log.d(TAG, text)
     }
 
-    fun i(text: String?) {
+    fun i(text: String) {
         if (TextUtils.isEmpty(text)) {
             return
         }
