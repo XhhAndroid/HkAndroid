@@ -16,6 +16,20 @@ import java.util.*
  *@describe 文件管理
  */
 class HFileService private constructor() {
+    /**
+     * 后缀名分隔符
+     */
+    val EXTENSION_SEPARATOR = '.'
+
+    /**
+     * Unix路径分隔符
+     */
+    private val UNIX_SEPARATOR = '/'
+
+    /**
+     * Windows路径分隔符
+     */
+    private val WINDOWS_SEPARATOR = '\\'
 
     companion object {
         private var fileService: HFileService? = null
@@ -29,6 +43,26 @@ class HFileService private constructor() {
         }
     }
 
+    fun getExtension(uri: String?): String {
+        if (uri == null) return ""
+        val extensionIndex: Int = uri.lastIndexOf(EXTENSION_SEPARATOR)
+        val lastUnixIndex: Int = uri.lastIndexOf(UNIX_SEPARATOR)
+        val lastWindowsIndex: Int = uri.lastIndexOf(WINDOWS_SEPARATOR)
+        val index = Math.max(lastUnixIndex, lastWindowsIndex)
+        val value = if (index > extensionIndex || extensionIndex < 0) "" else uri.substring(extensionIndex + 1)
+        return (EXTENSION_SEPARATOR + value)
+    }
+
+    /**
+     * 获取私有文件
+     */
+    fun privateFileIsExit(fileName: String):Observable<File>{
+        return getPrivateFileDir()
+            .flatMap { file->
+                return@flatMap Observable.just(File(file, fileName))
+            }
+    }
+
     /**
      * 获取私有文件内容
      */
@@ -36,6 +70,38 @@ class HFileService private constructor() {
         return getPrivateFileDir()
             .flatMap { file ->
                 readFileString(file, fileName)
+            }
+    }
+
+    fun createPrivateFile(path : String,fileName: String): Observable<File>{
+        return Observable.fromCallable {
+            val file = File(path, fileName)
+            if (!file.parentFile.exists()) {
+                file.parentFile.mkdirs()
+            }
+            if (file.exists()) {
+                file.delete()
+            }
+            file.createNewFile()
+            return@fromCallable file
+        }
+    }
+
+    /**
+     * 私有空间创建一个文件
+     */
+    fun createPrivateFile(fileName: String): Observable<File> {
+        return getPrivateFileDir()
+            .map { dir ->
+                val file = File(dir, fileName)
+                if (!file.parentFile.exists()) {
+                    file.parentFile.mkdirs()
+                }
+                if (file.exists()) {
+                    file.delete()
+                }
+                file.createNewFile()
+                return@map file
             }
     }
 
@@ -90,6 +156,34 @@ class HFileService private constructor() {
     }
 
     /**
+     * 创建私有存储文件路径
+     */
+    fun createPrivateFilePath(vararg filePath: String): Observable<File> {
+        return getPrivateFileDir()
+            .map { parentFile ->
+                val filepath: StringBuilder = StringBuilder()
+                for (f in filePath) {
+                    if (f.isBlank()) {
+                        continue
+                    }
+                    filepath.append(f).append(File.separator)
+                }
+                val privateFile = if (filepath.isBlank()) {
+                    File(parentFile.absolutePath + File.separator)
+                } else {
+                    File(parentFile.absolutePath + File.separator + filepath.toString())
+                }
+                if (privateFile.parentFile?.exists() != true) {
+                    privateFile.parentFile?.mkdirs()
+                }
+                if (!privateFile.exists()) {
+                    privateFile.mkdirs()
+                }
+                return@map privateFile
+            }
+    }
+
+    /**
      * 获取公共存储空间目录
      */
     @RequiresPermission(allOf = [Manifest.permission.WRITE_EXTERNAL_STORAGE])
@@ -135,6 +229,24 @@ class HFileService private constructor() {
                 return@flatMap Observable.just(file)
             }
     }
+
+    /**
+     * 读取assets下文件内容
+     */
+    fun openAssetsFile(fileName : String) : Observable<String>{
+        return Observable.just(fileName)
+            .map { name->
+                val inputStream = HAndroid.getApplication().applicationContext.resources.assets
+                    .open(name)
+                val bf = BufferedReader(InputStreamReader(inputStream))
+                var line: String?
+                val stringBuilder = java.lang.StringBuilder()
+                while (bf.readLine().also { line = it } != null) {
+                    stringBuilder.append(line)
+                }
+                return@map stringBuilder.toString()
+            }
+    }
 }
 
 private fun writeFileString(dir: File, fileName: String, content: String, append: Boolean): Observable<File> {
@@ -169,11 +281,10 @@ private fun readFileString(dir: File, fileName: String): Observable<String> {
         file
     }.map(Function { file ->
         FileReader(file).use { fr ->
-            val bt = CharArray(1024)
+            var c = 0
             val sb = StringBuffer()
-            while (fr.read(bt) != -1) {
-                sb.append(bt)
-                Arrays.fill(bt, 0.toChar())
+            while ((fr.read().also { c = it }) != -1) {
+                sb.append(c.toChar())
             }
             return@Function sb.toString()
         }
