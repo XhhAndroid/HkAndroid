@@ -2,6 +2,7 @@ package com.h.android.http;
 
 import com.h.android.http.annotation.BaseUrlProvider;
 import com.h.android.http.annotation.NetworkInterceptor;
+import com.h.android.http.call.FlowCallAdapterFactory;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -105,6 +106,7 @@ public class Hhttp {
                 .client(ohcb.build())
                 .baseUrl(baseUrl)
                 .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(FlowCallAdapterFactory.create())
                 .build().create(apiClazz);
     }
 }
