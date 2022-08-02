@@ -1,0 +1,26 @@
+package com.h.android.utils
+
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.*
+
+/**
+ * 倒计时类
+ */
+object CountDownTimer {
+
+    fun startTimer(
+        total: Int, onTick: (Int) -> Unit, onFinish: () -> Unit,
+        scope: CoroutineScope = GlobalScope
+    ): Job {
+        return flow {
+            for (i in total downTo 0) {
+                emit(i)
+                delay(1000)
+            }
+        }.flowOn(Dispatchers.Default)
+            .onCompletion { onFinish.invoke() }
+            .onEach { onTick.invoke(it) }
+            .flowOn(Dispatchers.Main)
+            .launchIn(scope)
+    }
+}
