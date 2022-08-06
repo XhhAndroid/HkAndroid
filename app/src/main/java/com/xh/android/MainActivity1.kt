@@ -32,9 +32,6 @@ class MainActivity1 : HActivity() {
     }
 
     private fun textApi(){
-        GlobalScope.launch {
-            val textModel = HApiManager.get().getApiService(TestApiService::class.java).textApi()
-        }
     }
 
     private fun start() {

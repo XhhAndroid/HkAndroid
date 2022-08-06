@@ -49,7 +49,7 @@ class MainActivity : HActivity() {
                     }).show()
             }
         })
-//        binding!!.recyclerView.adapter = adapter
+        binding!!.recyclerView.adapter = adapter
 
         var dataList = mutableListOf<String>()
         for (i in 0..50) {

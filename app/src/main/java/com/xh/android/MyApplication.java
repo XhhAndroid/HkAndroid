@@ -29,19 +29,6 @@ public class MyApplication extends Application {
         super.onCreate();
 
         HAndroid.INSTANCE.init(new HAndroid.Builder(this)
-                .addErrorConvertFunction(new Function<Throwable, String>() {
-                    @Override
-                    public String apply(@NonNull Throwable throwable) throws Exception {
-                        //全局统一处理业务中rx流function错误
-                        return "";
-                    }
-                })
-                .addErrorHandler(new Consumer<Throwable>() {
-                    @Override
-                    public void accept(Throwable throwable) throws Exception {
-                        //全局统一处理rx流的error
-                    }
-                })
 //                .addToast()
                 .addProgressProvider(new ProgressHUDFactory.ProgressHUDProvider() {
                     @Nullable

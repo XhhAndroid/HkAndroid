@@ -64,17 +64,9 @@ object HAndroid {
     }
 
     /**
-     * 绑定错误提示
-     */
-    fun <R> bindError(): UIErrorTransformer<R> {
-        return UIErrorTransformer(consumerLocal)
-    }
-
-    /**
      * 绑定错误提示-kotlin携程
      */
     fun bindErrorToast(cause: Throwable) {
-        consumerLocal.accept(cause)
     }
 
     /**
@@ -104,39 +96,14 @@ object HAndroid {
         return iToast!!
     }
 
-    //不调用addErrorHandler()时默认在此处处理
-    private var consumerLocal: Consumer<Throwable> = Consumer<Throwable> { thr ->
-        thr.message?.let { s ->
-            toast()?.showToastFail(s)
-        }
-    }
-
     private var iToast: IToastListener? = null
-    private var iProgress: ProgressListener? = null
 
     class Builder(application: Application) {
         var application: Application = Objects.requireNonNull(application)
         var progressHUDProvider: ProgressHUDProvider? = null
-        var errorConvertFunction: Function<Throwable, String> = Function { throwable -> throwable.message!! }
 
         fun addProgressProvider(progressHUDProvider: ProgressHUDProvider?): Builder {
             this.progressHUDProvider = progressHUDProvider
-            return this
-        }
-
-        /**
-         * 来自rx流function异常
-         */
-        fun addErrorConvertFunction(errorConvertFunction: Function<Throwable, String>): Builder {
-            this.errorConvertFunction = Objects.requireNonNull(errorConvertFunction)
-            return this
-        }
-
-        /**
-         * 来自rx流doError异常
-         */
-        fun addErrorHandler(consumer: Consumer<Throwable>): Builder {
-            consumerLocal = consumer
             return this
         }
 

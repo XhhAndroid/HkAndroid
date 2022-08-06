@@ -38,7 +38,7 @@ class BaseAlertDialog(protected var mContext: Context) : Dialog(mContext, R.styl
      */
     var countDownTime = 0
     private var getPhoneCodeLockTimer: Runnable? = null
-    override fun onCreate(savedInstanceState: Bundle) {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBaseAlertDialog = this
     }

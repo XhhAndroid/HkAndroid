@@ -13,7 +13,7 @@
     </style>
 
 
-    <style name="BaseDialog" parent="android:Theme.Holo.NoActionBar">
+    <style name="BaseDialog" parent="android:Theme.Material.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
         <item name="android:windowIsFloating">true</item>
